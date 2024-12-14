@@ -1,3 +1,6 @@
+/**
+  * Only god and the CCP knew what I was trying to do when I wrote this.
+ */
 #messages {
     max-height: 500px;
     overflow-y: scroll;
@@ -23,3 +26,7 @@
     font-size: 16px;
 }
 
+.logo {
+    width:50px !important;
+    height:50px !important;
+  }

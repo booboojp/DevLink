@@ -2,8 +2,6 @@
  * Schrödinger's cat, you don't know if my code works unless you run it or not. 
  * With that logic, I can say that my code works if I never run it!
  */
-
-
 console.clear();
 const express = require('express');
 const session = require('express-session');
@@ -221,7 +219,7 @@ app.get('/search', isLoggedIntoGitHub, (req, res) => {
 
 
 app.get('/home', (req, res) => {
-    res.render('home');
+    res.render('home', { user: req.user });
 });
 
 app.post('/search', isLoggedIntoGitHub, (req, res) => {
@@ -405,7 +403,15 @@ app.get('/profile/:githubId', isLoggedIntoGitHub, (req, res) => {
             if (err) {
                 return res.status(500).send("Database error.");
             }
-            res.render('profile', { user: userRow, personalInfo: infoRow || {} });
+            const userData = {
+                username: userRow.username,
+                avatar_url: userRow.avatar_url,
+                bio: userRow.bio,
+                _json: {
+                    avatar_url: userRow.avatar_url
+                }
+            };
+            res.render('profile', { user: userData, personalInfo: infoRow || {} });
         });
     });
 });

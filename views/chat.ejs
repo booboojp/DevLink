@@ -9,23 +9,24 @@
 <body>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-sm bg-light navbar-light ">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/"><img src="../public/assets/logo.png" class="rounded logo"></a>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/search">Find</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile">Profile</a>
-                    </li>
-                </ul>
-                <div class="navbar-nav ms-auto">
-                  <img src="<%= user._json.avatar_url %>" alt="Profile Picture" class="rounded-circle" style="width: 50px; height: 50px;">
-                </div>
-            </div>
+          <a class="navbar-brand" href="/"><img src="https://cdn.discordapp.com/attachments/1315100395906793584/1317604529906257960/DevLink.png?ex=675f4a57&is=675df8d7&hm=a213ff5afa1c2bbe8bd848351dc15fff2d391f08b454a39b6b547b829c9c427d&" class="rounded logo"></a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/search">Find</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+        </ul>
+        <div class="navbar-nav ms-auto">
+            <img src="<%= user._json.avatar_url %>" alt="Profile Picture" class="rounded-circle" style="width: 50px; height: 50px;">
+        </div>
         </nav>
     </div>
     <div id="chat-container">
@@ -50,20 +51,23 @@
         const messagesDiv = document.getElementById('messages');
         messages.forEach(msg => {
           const messageElement = document.createElement('p');
-          messageElement.innerHTML = `<img src="${msg.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;"><a href="${msg.profile_url}" target="_blank">${msg.username}</a>: ${msg.message}`;
+          messageElement.innerHTML = `
+            <img src="${msg.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;">
+            <a href="/profile/${msg.sender_id}">${msg.username}</a>: ${msg.message}
+          `;
           messagesDiv.appendChild(messageElement);
         });
       });
 
       socket.on('chatMessage', (data) => {
-      const messagesDiv = document.getElementById('messages');
-      const messageElement = document.createElement('p');
-      messageElement.innerHTML = `
-        <img src="${data.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;">
-        <a href="/profile/${data.senderId}" class="username-link">${data.username}</a>: ${data.message}
-      `;
-      messagesDiv.appendChild(messageElement);
-  });
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('p');
+        messageElement.innerHTML = `
+          <img src="${data.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;">
+          <a href="/profile/${data.senderId}">${data.username}</a>: ${data.message}
+        `;
+        messagesDiv.appendChild(messageElement);
+      });
 
       document.getElementById('send-button').addEventListener('click', () => {
         const input = document.getElementById('message-input');

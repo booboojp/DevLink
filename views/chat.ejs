@@ -2,55 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat with <%= otherUser.username %></title>
+    <title>Chat Room</title>
+    <style>
+        #messages {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+        #messages p {
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+        #message-form {
+            display: flex;
+            margin-top: 10px;
+        }
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #send-button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Chat with <%= otherUser.username %></h1>
-    </header>
-    <main>
-        <div id="chat-window">
-            <div id="messages"></div>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="message-form">
+            <input type="text" id="message-input" placeholder="Type your message here..." autocomplete="off" />
+            <button id="send-button">Send</button>
         </div>
-        <input id="message-input" type="text" placeholder="Type a message...">
-        <button id="send-button">Send</button>
-    </main>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
 
-<script>
-  const socket = io();
-  const roomId = '<%= [user.id, otherUser.id].sort().join("_") %>';
-  
-  socket.emit('joinRoom', { roomId });
+    <script>
+      const socket = io();
+      const roomId = '<%= [user.id, otherUser.id].sort().join("_") %>';
+      
+      socket.emit('joinRoom', { roomId });
 
-  socket.on('previousMessages', (messages) => {
-    const messagesDiv = document.getElementById('messages');
-    messages.forEach(msg => {
-      const messageElement = document.createElement('p');
-      messageElement.textContent = `${msg.sender_id}: ${msg.message}`;
-      messagesDiv.appendChild(messageElement);
-    });
-  });
-
-  socket.on('chatMessage', (data) => {
-    const messagesDiv = document.getElementById('messages');
-    const messageElement = document.createElement('p');
-    messageElement.textContent = `${data.senderId}: ${data.message}`;
-    messagesDiv.appendChild(messageElement);
-  });
-  document.getElementById('send-button').addEventListener('click', () => {
-    const input = document.getElementById('message-input');
-    const message = input.value.trim();
-    
-    if (message) {
-      socket.emit('chatMessage', {
-        roomId,
-        message,
-        senderId: '<%= user.id %>'
+      socket.on('previousMessages', (messages) => {
+        const messagesDiv = document.getElementById('messages');
+        messages.forEach(msg => {
+          const messageElement = document.createElement('p');
+          messageElement.innerHTML = `<a href="${msg.profile_url}" target="_blank">${msg.username}</a>: ${msg.message}`;
+          messagesDiv.appendChild(messageElement);
+        });
       });
-      input.value = '';
-    }
-  });
-</script>
+
+      socket.on('chatMessage', (data) => {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('p');
+        messageElement.innerHTML = `<a href="${data.profile_url}" target="_blank">${data.username}</a>: ${data.message}`;
+        messagesDiv.appendChild(messageElement);
+      });
+
+      document.getElementById('send-button').addEventListener('click', () => {
+        const input = document.getElementById('message-input');
+        const message = input.value.trim();
+        
+        if (message) {
+          socket.emit('chatMessage', {
+            roomId,
+            message,
+            senderId: '<%= user.id %>'
+          });
+          input.value = '';
+        }
+      });
+
+    //   Enter key press send message or smth I
+      document.getElementById('message-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('send-button').click();
+        }
+      });
+    </script>
 </body>
 </html>

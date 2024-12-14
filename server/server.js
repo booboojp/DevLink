@@ -1,3 +1,9 @@
+/**
+ * Schrödinger's cat, you don't know if my code works unless you run it or not. 
+ * With that logic, I can say that my code works if I never run it!
+ */
+
+
 console.clear();
 const express = require('express');
 const session = require('express-session');
@@ -12,9 +18,6 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-
-
-// OTHER FILE IMPORTS AND SHIT
 const { isLoggedIntoGitHub, checkAuthStatus } = require('../Middleware/authentication');
 const GitHubStrategy = require('passport-github2').Strategy;
 
@@ -251,9 +254,11 @@ io.on('connection', (socket) => {
 
         db.run(`INSERT OR IGNORE INTO chat_rooms (id) VALUES (?)`, [roomId]);
         const getMessages = `
-            SELECT * FROM chat_messages
-            WHERE room_id = ?
-            ORDER BY timestamp ASC
+            SELECT cm.*, u.username, u.profile_url
+            FROM chat_messages cm
+            LEFT JOIN users u ON cm.sender_id = u.github_id
+            WHERE cm.room_id = ?
+            ORDER BY cm.timestamp ASC
         `;
         db.all(getMessages, [roomId], (err, messages) => {
             if (err) {
@@ -274,12 +279,20 @@ io.on('connection', (socket) => {
                 console.error('Error saving message:', err);
                 return;
             }
-            io.to(roomId).emit('chatMessage', {
-                id: this.lastID,
-                roomId,
-                senderId,
-                message,
-                timestamp: new Date()
+            db.get(`SELECT username, profile_url FROM users WHERE github_id = ?`, [senderId], (err, user) => {
+                if (err || !user) {
+                    console.error('Error fetching user info:', err);
+                    return;
+                }
+                io.to(roomId).emit('chatMessage', {
+                    id: this.lastID,
+                    roomId,
+                    senderId,
+                    username: user.username,
+                    profile_url: user.profile_url,
+                    message,
+                    timestamp: new Date()
+                });
             });
         });
     });
@@ -289,7 +302,38 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get('/api/search', isLoggedIntoGitHub, (req, res) => {
+    const { state, city } = req.query;
 
+    if (!state && !city) {
+        return res.json({ users: [] });
+    }
+
+    let query = `
+        SELECT users.*, personal_info.*
+        FROM users
+        JOIN personal_info ON users.id = personal_info.user_id
+        WHERE 1=1
+    `;
+    const params = [];
+
+    if (state) {
+        query += ` AND personal_info.location LIKE ?`;
+        params.push(`${state}%`);
+    }
+
+    if (city) {
+        query += ` AND personal_info.location LIKE ?`;
+        params.push(`%, ${city}`);
+    }
+
+    db.all(query, params, (err, rows) => {
+        if (err) {
+            return res.status(500).json({ users: [] });
+        }
+        res.json({ users: rows });
+    });
+});
 
 
 app.get('/api/chat-history/:roomId', isLoggedIntoGitHub, (req, res) => {
@@ -311,7 +355,8 @@ app.get('/api/chat-history/:roomId', isLoggedIntoGitHub, (req, res) => {
     });
 });
 const PORT = 3000;
+
 http.listen(PORT, () => {
     console.log(`Process is running at port ${PORT}.`);
-});
-
+});  
+ 

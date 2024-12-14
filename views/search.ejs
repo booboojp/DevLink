@@ -3,25 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Users</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stateSelect = document.getElementById('state');
+            const cityInput = document.getElementById('city');
+            const resultsDiv = document.getElementById('results');
+
+            const fetchResults = () => {
+                const state = stateSelect.value;
+                const city = cityInput.value.trim();
+
+                const params = new URLSearchParams();
+                if (state) params.append('state', state);
+                if (city) params.append('city', city);
+
+                fetch(`/api/search?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
+                        if (state === '' && city === '') {
+                            resultsDiv.innerHTML = '<p>No users found.</p>';
+                            return;
+                        }
+
+                        if (data.users.length > 0) {
+                            const ul = document.createElement('ul');
+                            data.users.forEach(user => {
+                                const li = document.createElement('li');
+                                li.innerHTML = `
+                                    <p><strong>Username:</strong> ${user.username}</p>
+                                    <p><strong>Location:</strong> ${user.location}</p>
+                                    <p><strong>Looking for:</strong> ${user.looking_for}</p>
+                                    <a href="/chat/${user.id}">
+                                        <button>Chat</button>
+                                    </a>
+                                `;
+                                ul.appendChild(li);
+                            });
+                            resultsDiv.appendChild(ul);
+                        } else {
+                            resultsDiv.innerHTML = '<p>No users found matching your criteria.</p>';
+                        }
+                    })
+                    .catch(() => {
+                        resultsDiv.innerHTML = '<p>Error fetching results.</p>';
+                    });
+            };
+
+            stateSelect.addEventListener('change', fetchResults);
+            cityInput.addEventListener('input', fetchResults);
+        });
+    </script>
 </head>
 <body>
     <header>
         <h1>Search for Users</h1>
     </header>
     <main>
-        <form action="/search" method="POST">
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location"><br>
-
-            <label for="looking_for">Looking For:</label>
-            <select id="looking_for" name="looking_for">
-                <option value="hackathon">Hackathon</option>
-                <option value="project">Project</option>
-                <option value="friend">Friend</option>
+        <form>
+            <label for="state">State:</label>
+            <select id="state" name="state">
+                <option value="">Select State</option>
+                <option value="CA">California</option>
+                <option value="NY">New York</option>
+                <!-- States I ugess -->
             </select><br>
 
-            <button type="submit">Search</button>
+            <label for="city">Town/City:</label>
+            <input type="text" id="city" name="city"><br>
         </form>
+        <div id="results"></div>
     </main>
 </body>
 </html>

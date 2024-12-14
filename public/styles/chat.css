@@ -1,0 +1,25 @@
+#messages {
+    max-height: 500px;
+    overflow-y: scroll;
+}
+#messages p {
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+#messages a {
+    color: black;
+}
+#message-form {
+    display: flex;
+    margin-top: 10px;
+}
+#message-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+}
+#send-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+

@@ -1,0 +1,61 @@
+body {
+  background-color: #114B5F !important;
+}
+
+/* #114B5F Midnight green */
+/* #456990 Lapiz Lazuli */
+/* #E4FDE1 Mint */
+/* #F45B69 Bright-Pink */
+/* #6B2737 Wine */
+
+.text-ll {
+  color: #456990 !important;
+}
+
+.text-m {
+  color: #E4FDE1 !important;
+}
+
+.text-bp {
+  color: #F45B69 !important;
+}
+
+.text-w {
+  color: #6B2737 !important;
+}
+
+.element-ll {
+  background-color: #114B5F !important;
+}
+
+.element-ll {
+  background-color: #456990 !important;
+}
+
+.element-m {
+  background-color: #E4FDE1 !important;
+}
+
+.element-bp {
+  background-color: #F45B69 !important;
+}
+
+.element-w {
+  background-color: #6B2737 !important;
+}
+
+.nav-item {
+  color: #6B2737 !important;
+}
+
+* {
+  color: #114B5F !important;
+}
+
+.card-header {
+  background-color: #E4FDE1 !important;
+}
+
+.card {
+  background-color: #E4FDE1 !important;
+}

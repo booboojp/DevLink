@@ -1,0 +1,18 @@
+body {
+  background-color: #114B5F !important;
+}
+
+h1,h4,.row {
+  text-align: center;
+  color: #E4FDE1 !important;
+}
+
+.logo {
+  width:50px !important;
+  height:50px !important;
+}
+
+.pfp {
+  width:250px !important;
+  height:250px !important;
+}

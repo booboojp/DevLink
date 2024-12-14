@@ -15,7 +15,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 require('dotenv').config();
 const app = express();
 
-const http = require('http').Server(app);
+const http = require('http').Server(app); 
 const io = require('socket.io')(http);
 
 const { isLoggedIntoGitHub, checkAuthStatus } = require('../Middleware/authentication');
@@ -110,7 +110,7 @@ db.serialize(() => {
 
 
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views')); 
 
@@ -125,6 +125,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
@@ -170,31 +171,30 @@ app.get('/auth/error', (req, res) => res.render('githubLoginError'));
 app.post('/update-personal-info', isLoggedIntoGitHub, (req, res) => {
     const { age, gender, likes, skills, state, city, looking_for } = req.body;
     const githubId = req.user.id;
-    const location = state && city ? `${state}, ${city}` : null;
+    const location = `${state}, ${city}`;
 
     db.get(`SELECT id FROM users WHERE github_id = ?`, [githubId], (err, row) => {
-        if (err) {
-            return res.status(500).send("Database error.");
-        }
-        if (row) {
-            const userId = row.id;
-            db.run(`INSERT INTO personal_info (user_id, age, gender, likes, skills, location, looking_for) VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT(user_id) DO UPDATE SET
-                        age=COALESCE(excluded.age, personal_info.age),
-                        gender=COALESCE(excluded.gender, personal_info.gender),
-                        likes=COALESCE(excluded.likes, personal_info.likes),
-                        skills=COALESCE(excluded.skills, personal_info.skills),
-                        location=COALESCE(excluded.location, personal_info.location),
-                        looking_for=COALESCE(excluded.looking_for, personal_info.looking_for)`,
-                [userId, age, gender, likes, skills, location, looking_for], (err) => {
-                    if (err) {
-                        return res.status(500).send("Database error.");
-                    }
-                    res.redirect('/dashboard');
-                });
-        } else {
-            res.status(404).send("User not found.");
-        }
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!row) return res.status(404).json({ error: 'User not found' });
+
+        const userId = row.id;
+        const sql = `
+            INSERT INTO personal_info (
+                user_id, age, gender, likes, skills, location, looking_for
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                age = excluded.age,
+                gender = excluded.gender,
+                likes = excluded.likes,
+                skills = excluded.skills,
+                location = excluded.location,
+                looking_for = excluded.looking_for
+        `;
+
+        db.run(sql, [userId, age, gender, likes, skills, location, looking_for], (err) => {
+            if (err) return res.status(500).json({ error: 'Error updating profile' });
+            res.json({ message: 'Profile updated successfully' });
+        });
     });
 });
 app.get('/profile', isLoggedIntoGitHub, (req, res) => {
@@ -216,8 +216,14 @@ app.get('/profile', isLoggedIntoGitHub, (req, res) => {
     });
 });
 app.get('/search', isLoggedIntoGitHub, (req, res) => {
-    res.render('search');
+    res.render('search', { user: req.user });
 });
+
+
+app.get('/home', (req, res) => {
+    res.render('home');
+});
+
 app.post('/search', isLoggedIntoGitHub, (req, res) => {
     const { location, looking_for } = req.body;
 
@@ -235,26 +241,30 @@ app.post('/search', isLoggedIntoGitHub, (req, res) => {
         res.render('searchResults', { users: rows });
     });
 });
-app.get('/chat/:userId', isLoggedIntoGitHub, (req, res) => {
-    const otherUserId = req.params.userId;
-    const currentUserId = req.user.id;
+app.get('/chat/:githubId', isLoggedIntoGitHub, (req, res) => {
+    const otherUserGithubId = req.params.githubId;
+    const currentUserGithubId = req.user.id;
 
-    db.get(`SELECT * FROM users WHERE id = ?`, [otherUserId], (err, otherUser) => {
+    db.get(`SELECT * FROM users WHERE github_id = ?`, [otherUserGithubId], (err, otherUser) => {
         if (err) {
             return res.status(500).send("Database error.");
         }
+        if (!otherUser) {
+            return res.status(404).send("User not found.");
+        }
+
         res.render('chat', { user: req.user, otherUser });
     });
 });
+
 io.on('connection', (socket) => {
     console.log('User connected');
 
     socket.on('joinRoom', ({ roomId }) => {
         socket.join(roomId);
 
-        db.run(`INSERT OR IGNORE INTO chat_rooms (id) VALUES (?)`, [roomId]);
         const getMessages = `
-            SELECT cm.*, u.username, u.profile_url
+            SELECT cm.*, u.username, u.profile_url, u.avatar_url
             FROM chat_messages cm
             LEFT JOIN users u ON cm.sender_id = u.github_id
             WHERE cm.room_id = ?
@@ -279,7 +289,7 @@ io.on('connection', (socket) => {
                 console.error('Error saving message:', err);
                 return;
             }
-            db.get(`SELECT username, profile_url FROM users WHERE github_id = ?`, [senderId], (err, user) => {
+            db.get(`SELECT username, profile_url, avatar_url FROM users WHERE github_id = ?`, [senderId], (err, user) => {
                 if (err || !user) {
                     console.error('Error fetching user info:', err);
                     return;
@@ -290,6 +300,7 @@ io.on('connection', (socket) => {
                     senderId,
                     username: user.username,
                     profile_url: user.profile_url,
+                    avatar_url: user.avatar_url,
                     message,
                     timestamp: new Date()
                 });
@@ -302,13 +313,26 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get('/api/profile-data', isLoggedIntoGitHub, (req, res) => {
+    const githubId = req.user.id;
+    
+    db.get(
+        `SELECT personal_info.* 
+         FROM personal_info 
+         JOIN users ON users.id = personal_info.user_id 
+         WHERE users.github_id = ?`,
+        [githubId],
+        (err, row) => {
+            if (err) {
+                return res.status(500).json({ error: 'Database error' });
+            }
+            res.json(row || {});
+        }
+    );
+});
 app.get('/api/search', isLoggedIntoGitHub, (req, res) => {
-    const { state, city } = req.query;
-
-    if (!state && !city) {
-        return res.json({ users: [] });
-    }
-
+    const { state, city, age, gender, likes, skills, looking_for } = req.query;
+    
     let query = `
         SELECT users.*, personal_info.*
         FROM users
@@ -321,17 +345,50 @@ app.get('/api/search', isLoggedIntoGitHub, (req, res) => {
         query += ` AND personal_info.location LIKE ?`;
         params.push(`${state}%`);
     }
-
     if (city) {
         query += ` AND personal_info.location LIKE ?`;
         params.push(`%, ${city}`);
     }
+    if (age) {
+        query += ` AND personal_info.age = ?`;
+        params.push(parseInt(age));
+    }
+    if (gender) {
+        query += ` AND personal_info.gender = ?`;
+        params.push(gender);
+    }
+    if (likes) {
+        query += ` AND personal_info.likes LIKE ?`;
+        params.push(`%${likes}%`);
+    }
+    if (skills) {
+        query += ` AND personal_info.skills LIKE ?`;
+        params.push(`%${skills}%`);
+    }
+    if (looking_for) {
+        query += ` AND personal_info.looking_for = ?`;
+        params.push(looking_for);
+    }
 
     db.all(query, params, (err, rows) => {
         if (err) {
+            console.error('Search error:', err);
             return res.status(500).json({ users: [] });
         }
-        res.json({ users: rows });
+        const users = rows.map(row => ({
+            id: row.id,
+            github_id: row.github_id,
+            username: row.username,
+            location: row.location,
+            looking_for: row.looking_for,
+            likes: row.likes,
+            skills: row.skills,
+            age: row.age,
+            gender: row.gender,
+            avatar_url: row.avatar_url
+            
+        }));
+        res.json({ users });
     });
 });
 

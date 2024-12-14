@@ -4,7 +4,11 @@ DevLink.
 
 ## Description
 
-DevLink links developers across the world, find programmers near you with the skills you need, collaborate and work together with our chat system, and build awesome projects :D  
+DevLink links developers across the world, find programmers near you with the skills you need, collaborate and work together with our chat system, and build awesome projects :D
+
+Everything from Hackathins, Hackclubs and a lot more!
+
+We created this project because at the start of the event, our teammate left us due to greed. That is why we sought out to create a system for developers to connect for events, and just for technology in general.
 
 ## Profile Page
 ![Sample](https://media.discordapp.net/attachments/1278592861268344884/1317610707503677597/Screenshot_from_2024-12-14_16-47-09.png?ex=675f5018&is=675dfe98&hm=f6d05f5bc60c95c99a184608f410bf2a2a2b6bdaf66e9fa05beb3ec2041de885&=&format=webp&quality=lossless&width=1096&height=546)

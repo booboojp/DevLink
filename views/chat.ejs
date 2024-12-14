@@ -56,11 +56,14 @@
       });
 
       socket.on('chatMessage', (data) => {
-        const messagesDiv = document.getElementById('messages');
-        const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<img src="${data.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;"><a href="${data.profile_url}" target="_blank">${data.username}</a>: ${data.message}`;
-        messagesDiv.appendChild(messageElement);
-      });
+      const messagesDiv = document.getElementById('messages');
+      const messageElement = document.createElement('p');
+      messageElement.innerHTML = `
+        <img src="${data.avatar_url}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px; margin-right: 5px;">
+        <a href="/profile/${data.senderId}" class="username-link">${data.username}</a>: ${data.message}
+      `;
+      messagesDiv.appendChild(messageElement);
+  });
 
       document.getElementById('send-button').addEventListener('click', () => {
         const input = document.getElementById('message-input');

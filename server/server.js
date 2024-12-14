@@ -391,7 +391,24 @@ app.get('/api/search', isLoggedIntoGitHub, (req, res) => {
         res.json({ users });
     });
 });
+app.get('/profile/:githubId', isLoggedIntoGitHub, (req, res) => {
+    const githubId = req.params.githubId;
 
+    db.get(`SELECT * FROM users WHERE github_id = ?`, [githubId], (err, userRow) => {
+        if (err) {
+            return res.status(500).send("Database error.");
+        }
+        if (!userRow) {
+            return res.status(404).send("User not found.");
+        }
+        db.get(`SELECT * FROM personal_info WHERE user_id = ?`, [userRow.id], (err, infoRow) => {
+            if (err) {
+                return res.status(500).send("Database error.");
+            }
+            res.render('profile', { user: userRow, personalInfo: infoRow || {} });
+        });
+    });
+});
 
 app.get('/api/chat-history/:roomId', isLoggedIntoGitHub, (req, res) => {
     const { roomId } = req.params;

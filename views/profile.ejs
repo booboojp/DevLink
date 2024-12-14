@@ -43,6 +43,8 @@
         <div class="row">
             <div class="col"> </div>
             <div class="col"><h4>Biography</h4></div>
+            <p><strong>Github Bio:</strong> <%= user.bio %></p>
+            <p><strong>Age:</strong> <%= personalInfo.age || 'N/A' %></p>
         </div>
         
         <div class="row">
@@ -55,10 +57,6 @@
     <br>
     <div class="container-fluid">
         <div class="row">
-            <div class="col"><h4>Rating</h4></div>
-            <div class="col"><h4>Skills</h4></div>
-        </div>
-        <div class="row">
             <div class="col">
                 
                 <p><strong>Username:</strong> <%= user.username %></p>
@@ -68,14 +66,6 @@
                 <p><strong>Skills:</strong> <%= personalInfo.skills || 'N/A' %></p>
                 <p><strong>Location:</strong> <%= personalInfo.location || 'N/A' %></p>
                 <p><strong>Looking for:</strong> <%= personalInfo.looking_for || 'N/A' %></p>
-            </div>
-            <div class="col">
-                <dl>
-                    <dt>Technical</dt>
-                    <dd>- Absolutely nothing</dd>
-                    <dt>Nontechnical</dt>
-                    <dd>- Everything</dd>
-                  </dl>
             </div>
         </div>
     </div>  

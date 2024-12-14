@@ -47,18 +47,20 @@
                                 const li = document.createElement('li');
                                 li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'mb-2');
                                 li.innerHTML = `
-                                    <img src="${user.avatar_url || 'https://www.shutterstock.com/shutterstock/photos/535853263/display_1500/stock-vector-profile-photo-vector-placeholder-pic-male-person-default-profile-gray-photo-picture-avatar-535853263.jpg'}" class="pfp rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    <a href="/profile/${user.github_id}">
+                                    <img src="${user.avatar_url || 'default-avatar.jpg'}" class="pfp rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    </a>
                                     <div class="flex-grow-1">
-                                        <p><strong>Username:</strong> ${user.username}</p>
-                                        <p><strong>Location:</strong> ${user.location}</p>
-                                        <p><strong>Looking for:</strong> ${user.looking_for}</p>
-                                        <p><strong>Likes:</strong> ${user.likes}</p>
-                                        <p><strong>Age:</strong> ${user.age}</p>
+                                    <p><strong>Username:</strong> ${user.username}</p>
+                                    <p><strong>Location:</strong> ${user.location}</p>
+                                    <p><strong>Looking for:</strong> ${user.looking_for}</p>
+                                    <p><strong>Likes:</strong> ${user.likes}</p>
+                                    <p><strong>Age:</strong> ${user.age}</p>
                                     </div>
                                     <a href="/chat/${user.github_id}" class="btn btn-primary">Chat</a>
                                 `;
                                 ul.appendChild(li);
-                            });
+                                });
                             resultsDiv.appendChild(ul);
                         } else {
                             resultsDiv.innerHTML = '<p>No users found matching your criteria.</p>';

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hackathon Finding App</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome, <%= user.displayName %></h1>
+    </header>
+    <main>
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="/profile">View Your Profile</a></li>
+            <li><a href="/search">Find People</a></li>
+        </ul>
+        <p>You are logged in!</p>
+        <button id="logout-button">Logout</button>
+        
+        <h2>Update Personal Information</h2>
+        <form action="/update-personal-info" method="POST">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required><br>
+        
+            <label for="gender">Gender:</label>
+            <input type="text" id="gender" name="gender"><br>
+        
+            <label for="likes">Likes:</label>
+            <input type="text" id="likes" name="likes"><br>
+        
+            <label for="skills">Skills:</label>
+            <input type="text" id="skills" name="skills"><br>
+        
+            <label for="location">Location:</label>
+            <select id="state" name="state">
+                <option value="">Select State</option>
+                <option value="CA">California</option>
+                <option value="NY">New York</option>
+                <!-- MORE STATES AND SHIT HERE-->
+            </select>
+            <input type="text" id="city" name="city" placeholder="City/Town"><br>
+        
+            <label for="looking_for">Looking For:</label>
+            <select id="looking_for" name="looking_for">
+                <option value="hackathon">Hackathon</option>
+                <option value="project">Project</option>
+                <option value="friend">Friend</option>
+            </select><br>
+        
+            <button type="submit">Save</button>
+        </form>
+    </main>
+    <div id="logout-modal" style="display: none;">
+        <p>Please go to <a href="https://github.com/settings/applications">https://github.com/settings/applications</a> and remove APPLICATIONNAME.</p>
+        <button id="close-modal">Close</button>
+    </div>
+    
+    <script>
+        document.getElementById('logout-button').addEventListener('click', () => {
+            document.getElementById('logout-modal').style.display = 'block';
+        });
+    
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('logout-modal').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

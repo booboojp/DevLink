@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Users</title>
+</head>
+<body>
+    <header>
+        <h1>Search for Users</h1>
+    </header>
+    <main>
+        <form action="/search" method="POST">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location"><br>
+
+            <label for="looking_for">Looking For:</label>
+            <select id="looking_for" name="looking_for">
+                <option value="hackathon">Hackathon</option>
+                <option value="project">Project</option>
+                <option value="friend">Friend</option>
+            </select><br>
+
+            <button type="submit">Search</button>
+        </form>
+    </main>
+</body>
+</html>

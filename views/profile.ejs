@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Profile</title>
+</head>
+<body>
+    <header>
+        <h1>Your Profile</h1>
+    </header>
+    <main>
+        <p><strong>Username:</strong> <%= user.username %></p>
+        <p><strong>Age:</strong> <%= personalInfo.age || 'N/A' %></p>
+        <p><strong>Gender:</strong> <%= personalInfo.gender || 'N/A' %></p>
+        <p><strong>Likes:</strong> <%= personalInfo.likes || 'N/A' %></p>
+        <p><strong>Skills:</strong> <%= personalInfo.skills || 'N/A' %></p>
+        <p><strong>Location:</strong> <%= personalInfo.location || 'N/A' %></p>
+        <p><strong>Looking for:</strong> <%= personalInfo.looking_for || 'N/A' %></p>
+
+        <a href="/dashboard">
+            <button>Back to Dashboard</button>
+        </a>
+    </main>
+</body>
+</html>

@@ -2,7 +2,17 @@ const isLoggedIntoGitHub = (req, res, next) => {
     if (req.user) {
         next();
     } else {
-        res.status(401).send('You must be logged into GitHub to access this page');
+        res.redirect('/');
     }
 }
-m
+const checkAuthStatus = (req, res, next) => {
+    if (req.user) {
+        console.log('User is logged in.');
+        res.redirect('/dashboard');
+    } else {
+        console.log('User is not logged in.');
+        next();
+    }
+}
+
+module.exports = { isLoggedIntoGitHub, checkAuthStatus };

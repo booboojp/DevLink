@@ -1,77 +1,102 @@
+
+:root {
+  --midnight-green: #114B5F;
+  --lapis-lazuli: #456990;
+  --nyanza: #E4FDE1;
+  --bright-pink-crayola: #F45B69;
+  --wine: #6B2737;
+  --black: #000000;
+}
+
+
 body {
-  background-color: #114B5F !important;
+  background-color: var(--lapis-lazuli);
+  color: var(--black);
 }
 
-/* #114B5F Midnight green */
-/* #456990 Lapiz Lazuli */
-/* #E4FDE1 Mint */
-/* #F45B69 Bright-Pink */
-/* #6B2737 Wine */
 
-.text-ll {
-  color: #456990 !important;
+h1, h2, h4, .row, .text-center {
+  text-align: center;
+  color: var(--nyanza) !important;
 }
 
-.text-m {
-  color: #E4FDE1 !important;
+.navbar {
+  background-color: var(--bright-pink-crayola) !important;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.text-bp {
-  color: #F45B69 !important;
-}
-
-.text-w {
-  color: #6B2737 !important;
-}
-
-.element-ll {
-  background-color: #114B5F !important;
-}
-
-.element-ll {
-  background-color: #456990 !important;
-}
-
-.element-m {
-  background-color: #E4FDE1 !important;
-}
-
-.element-bp {
-  background-color: #F45B69 !important;
-}
-
-.element-w {
-  background-color: #6B2737 !important;
-}
-
-.nav-item {
-  color: #6B2737 !important;
-}
-
-.card-header {
-  background-color: #E4FDE1 !important;
-}
-
-.card {
-  background-color: #E4FDE1 !important;
-}
-.nav-link {
-  color: #114B5F !important;
-}
-.logo {
-  width:50px !important;
-  height:50px !important;
-}
-
-nav .navbar-brand img {
+.navbar-brand img {
   width: 50px;
   height: 50px;
+  transition: transform 0.3s ease;
 }
 
-nav .navbar-nav .nav-link {
-  color: var(--nyanza);
+.navbar-brand img:hover {
+  transform: scale(1.1);
 }
 
-nav .navbar-nav .nav-link.active {
+.navbar-nav .nav-link {
+  color: var(--nyanza) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link.active {
   font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--midnight-green) !important;
+  transform: translateY(-2px);
+}
+
+#messages p {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  background-color: var(--nyanza);
+}
+
+#messages a {
+  color: var(--midnight-green);
+}
+
+#message-form {
+  display: flex;
+  margin-top: 10px;
+}
+
+#message-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  background-color: var(--nyanza);
+}
+
+#send-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: var(--nyanza);
+}
+
+@media (max-width: 600px) {
+  nav, article {
+    width: 100%;
+    height: auto;
+  }
+}
+
+
+.sora-regular {
+  font-family: "Sora", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.indie-flower-regular {
+  font-family: "Indie Flower", cursive;
+  font-weight: 400;
+  font-style: normal;
 }

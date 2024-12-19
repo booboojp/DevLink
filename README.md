@@ -7,8 +7,6 @@ DevLink links developers across the world, find programmers near you with the sk
 
 Everything from Hackathins, Hackclubs and a lot more!
 
-We created this project because at the start of the event, our teammate left us due to greed. That is why we sought out to create a system for developers to connect for events, and just for technology in general.
-
 
 ### Note:
 For this project we really worked on making the backend and database work. This means that while It may not look too nice, all of the functionality is there with lots of bug testing.
